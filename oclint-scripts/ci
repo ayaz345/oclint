@@ -30,20 +30,22 @@ if args.reset:
 if args.setup:
     current_dir = os.getcwd()
     path.cd(path.root_dir)
-    process.call('git clone ' + path.url.json_compilation_database)
+    process.call(f'git clone {path.url.json_compilation_database}')
     if environment.is_darwin():
-        process.call('git clone ' + path.url.xcodebuild)
+        process.call(f'git clone {path.url.xcodebuild}')
     path.cd(current_dir)
     process.call(f'{sys.executable} clang')
     if not args.release:
         process.call(f'{sys.executable} googleTest co')
-        process.call(f'{sys.executable} googleTest build -clean' + process.j_flag(args.j))
+        process.call(
+            f'{sys.executable} googleTest build -clean{process.j_flag(args.j)}'
+        )
 
 if args.release:
-    process.call(f'{sys.executable} build -clean -release' + process.j_flag(args.j))
+    process.call(f'{sys.executable} build -clean -release{process.j_flag(args.j)}')
 else:
-    process.call(f'{sys.executable} test -clean' + process.j_flag(args.j))
-    process.call(f'{sys.executable} build -clean' + process.j_flag(args.j))
+    process.call(f'{sys.executable} test -clean{process.j_flag(args.j)}')
+    process.call(f'{sys.executable} build -clean{process.j_flag(args.j)}')
 process.call(f'{sys.executable} bundle')
 if environment.is_unix() and not args.release:
     process.call(f'{sys.executable} dogFooding -enable-clang-static-analyzer')

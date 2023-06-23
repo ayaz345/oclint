@@ -12,19 +12,19 @@ def module_source_dir(module_name):
     return os.path.join(root_dir, module_name)
 
 def oclint_module_source_dir(module_name):
-    return module_source_dir("oclint-" + module_name)
+    return module_source_dir(f"oclint-{module_name}")
 
 def module_build_dir(module_name):
     return os.path.join(build_root, module_name)
 
 def oclint_module_build_dir(module_name):
-    return module_build_dir("oclint-" + module_name)
+    return module_build_dir(f"oclint-{module_name}")
 
 def oclint_module_test_dir(module_name):
-    return module_build_dir("oclint-" + module_name + "-test")
+    return module_build_dir(f"oclint-{module_name}-test")
 
 def oclint_module_dogfooding_dir(module_name):
-    return module_build_dir("oclint-" + module_name + "-dogfooding")
+    return module_build_dir(f"oclint-{module_name}-dogfooding")
 
 class source:
     clang_dir = module_source_dir("llvm")

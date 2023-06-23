@@ -50,11 +50,10 @@ def pre_check(folder_name):
     pre_check_test(folder_name)
 
 def generate_code_block(line, node_type = ""):
-    line_re = re.search('def (.+) :', line)
-    if line_re:
-        node_name = line_re.group(1) + node_type
+    if line_re := re.search('def (.+) :', line):
+        node_name = line_re[1] + node_type
         code_block = "\n    /* Visit " + node_name + "\n"
-        code_block += "    bool Visit" + node_name + "(" + node_name + " *node)\n"
+        code_block += f"    bool Visit{node_name}({node_name}" + " *node)\n"
         code_block += "    {\n        return true;\n    }\n"
         code_block += "     */\n"
         return code_block
@@ -82,11 +81,10 @@ def copy_template(folder_path, rule_type, suffix, rule_dict):
     template_path = os.path.join(RULES_TEMPLATE_DIRECTORY, rule_type + suffix + '.tmpl')
     rule_class_name = rule_dict['RULE_CLASS_NAME']
     dst_path = os.path.join(folder_path, rule_class_name + suffix + '.cpp')
-    dst_file = open(dst_path, 'w')
-    with open(template_path, 'r') as template_file:
-        for each_line in template_file:
-            dst_file.write(replace_wildcard(each_line, rule_dict))
-    dst_file.close()
+    with open(dst_path, 'w') as dst_file:
+        with open(template_path, 'r') as template_file:
+            for each_line in template_file:
+                dst_file.write(replace_wildcard(each_line, rule_dict))
 
 def copy_rule(folder_path, rule_dict):
     rule_type = rule_dict['RULE_TYPE']
@@ -97,14 +95,19 @@ def copy_test(folder_path, rule_dict):
 
 def write_cmake_lists(cmake_lists_path, rule_dict):
     rule_class_name = rule_dict['RULE_CLASS_NAME']
-    set_build_rule = 'SET(Build' + rule_class_name + 'Rule ' + rule_class_name + ')'
+    set_build_rule = f'SET(Build{rule_class_name}Rule {rule_class_name})'
     build_dynamic_rules = 'BUILD_DYNAMIC_RULES("${Build' + rule_class_name + 'Rule}")'
     with open(cmake_lists_path, 'a') as cmake_lists_file:
         cmake_lists_file.write('\n' + set_build_rule + '\n' + build_dynamic_rules + '\n')
 
 def write_test_cmake_lists(cmake_lists_path, rule_dict):
     rule_class_name = rule_dict['RULE_CLASS_NAME']
-    build_test_rule = 'BUILD_TEST(' + rule_class_name + 'RuleTest\n' + rule_class_name + 'RuleTest.cpp)'
+    build_test_rule = (
+        f'BUILD_TEST({rule_class_name}'
+        + 'RuleTest\n'
+        + rule_class_name
+        + 'RuleTest.cpp)'
+    )
     with open(cmake_lists_path, 'a') as cmake_lists_file:
         cmake_lists_file.write('\n' + build_test_rule + '\n')
 
@@ -117,7 +120,7 @@ def scaffold(folder_name, rule_dict):
         write_test_cmake_lists(custom_test_cmake_lists_path(folder_name), rule_dict)
 
 def lower_add_space(name_re):
-    return ' ' + name_re.group(0).lower()
+    return f' {name_re.group(0).lower()}'
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument("class_name", help="class name of the rule")

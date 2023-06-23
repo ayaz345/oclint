@@ -26,7 +26,7 @@ def clean_module(module_name):
 def build_command(module_extras, source_path):
     cmd_build = cmake.builder(source_path).append('CMAKE_EXPORT_COMPILE_COMMANDS', 'ON')
     extras = {'LLVM_ROOT': path.build.clang_install_dir}
-    extras.update(module_extras)
+    extras |= module_extras
     return cmd_build.append_dict(extras).str()
 
 def build_module(module_name):
@@ -34,7 +34,7 @@ def build_module(module_name):
     source_path = path.oclint_module_source_dir(module_name)
 
     module_extras = {}
-    if module_name == "rules" or module_name == "reporters" or module_name == "driver":
+    if module_name in ["rules", "reporters", "driver"]:
         module_extras['OCLINT_SOURCE_DIR'] = path.source.core_dir
         module_extras['OCLINT_BUILD_DIR'] = path.build.core_build_dir
     if module_name == "rules":
@@ -65,10 +65,10 @@ def display_result(module_name):
 def dogfooding(module_name, enable_clang_static_analyzer):
     source_path = path.oclint_module_source_dir(module_name)
     oclint_json_compilation_database_path = os.path.join(path.build.bundle_dir, 'bin', 'oclint-json-compilation-database')
-    command = oclint_json_compilation_database_path + ' -- -max-priority-1=0 -max-priority-2=0 -max-priority-3=0'
+    command = f'{oclint_json_compilation_database_path} -- -max-priority-1=0 -max-priority-2=0 -max-priority-3=0'
     if enable_clang_static_analyzer:
         command += ' -enable-clang-static-analyzer'
-    command += ' -o ' + result_path(module_name)
+    command += f' -o {result_path(module_name)}'
 
     current_dir = os.getcwd()
     path.cd(source_path)

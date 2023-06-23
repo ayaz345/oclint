@@ -13,21 +13,18 @@ class builder:
             self.__cmd += ' -G "MSYS Makefiles"'
 
     def __wrap_double_quote(self, value):
-        return '"' + value + '"'
+        return f'"{value}"'
 
     def str(self):
-        cmd = self.__cmd + ' '
+        cmd = f'{self.__cmd} '
         if environment.is_mingw32():
             return cmd + self.__wrap_double_quote(self.__source_path)
         else:
             return cmd + self.__source_path
 
     def append(self, key, value, double_quote = False):
-        self.__cmd += ' -D ' + key + '='
-        if double_quote:
-            self.__cmd += self.__wrap_double_quote(value)
-        else:
-            self.__cmd += value
+        self.__cmd += f' -D {key}='
+        self.__cmd += self.__wrap_double_quote(value) if double_quote else value
         return self
 
     def release_build(self):

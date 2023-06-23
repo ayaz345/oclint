@@ -19,7 +19,7 @@ def linux_distribution():
     return platform.linux_distribution()
 
 def dist_env():
-    return arch() + '-' + kernel() + '-' + kernel_version()
+    return f'{arch()}-{kernel()}-{kernel_version()}'
 
 def is_aarch64_or_arm64():
     return arch().startswith("aarch64") or arch().startswith("arm64")
